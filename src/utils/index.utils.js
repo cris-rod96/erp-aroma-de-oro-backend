@@ -1,6 +1,3 @@
-import bcryptUtils from "./bcrypt/bcrypt.util.js"
+import bcryptUtils from "./bcrypt/bcrypt.util.js";
 
-
-export {
-    bcryptUtils
-}
+export { bcryptUtils };
