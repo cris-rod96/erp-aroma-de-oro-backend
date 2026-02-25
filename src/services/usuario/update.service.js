@@ -1,5 +1,5 @@
 import { Usuario } from "../../libs/db.js";
-import { bcryptUtils } from "../../utils/index.utils";
+import { bcryptUtils } from "../../utils/index.utils.js";
 
 const actualizarInformacion = async (id, data) => {
   const usuario = await Usuario.findOne({
