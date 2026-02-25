@@ -4,9 +4,12 @@ import personaControllers from "./persona/index.controller.js";
 
 import productoControllers from "./producto/index.controller.js";
 
+import usuarioControllers from "./usuario/index.controller.js";
+
 export {
   empresaControllers,
   nominaControllers,
   personaControllers,
   productoControllers,
+  usuarioControllers,
 };
