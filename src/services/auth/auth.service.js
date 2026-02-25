@@ -1,5 +1,5 @@
 import { Usuario } from "../../libs/db.js";
-import { bcryptUtils, jwtUtils } from "../../utils/index.utils";
+import { bcryptUtils, jwtUtils } from "../../utils/index.utils.js";
 
 const iniciarSesion = async (correo, clave) => {
   const usuario = await Usuario.findOne({
