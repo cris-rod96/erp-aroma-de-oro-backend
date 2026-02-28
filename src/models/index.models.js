@@ -4,6 +4,12 @@ import PersonaModel from "./persona/persona.model.js";
 import ProductoModel from "./producto/producto.model.js";
 import UsuarioModel from "./usuario/usuario.model.js";
 import TicketModel from "./ticket/ticket.model.js";
+import LiquidacionModel from "./liquidacion/liquidacion.model.js";
+import RetencionModel from "./retencion/retencion.model.js";
+import DetalleLiquidacion from "./detalle_liquidacion/detalle_liquidacion.model.js";
+import CuentasPorPagarModel from "./cuentas_por_pagar/cuentas_por_pagar.js";
+import VentasModel from "./venta/venta.model.js";
+import CuentasPorCobrarModel from "./cuentas_por_cobrar/cuentas_por_cobrar.js";
 
 export const models = [
   EmpresaModel,
@@ -12,4 +18,10 @@ export const models = [
   ProductoModel,
   NominaModel,
   TicketModel,
+  LiquidacionModel,
+  DetalleLiquidacion,
+  RetencionModel,
+  VentasModel,
+  CuentasPorCobrarModel,
+  CuentasPorPagarModel,
 ];
