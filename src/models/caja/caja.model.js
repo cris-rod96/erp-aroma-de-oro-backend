@@ -8,31 +8,29 @@ const CajaModel = (sq) => {
       defaultValue: DataTypes.UUIDV4,
     },
 
-    fecha: {
+    fechaApertura: {
       type: DataTypes.DATE,
-      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
 
-    tipoMovimiento: {
-      type: DataTypes.ENUM,
-      values: ["Ingreso", "Egreso"],
-      allowNull: false,
+    fechaCierre: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
 
-    categoria: {
-      type: DataTypes.ENUM,
-      values: ["Compra", "Venta", "Gasto", "Nomina"],
-      allowNull: false,
-    },
-
-    monto: {
+    montoApertura: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
+      defaultValue: 0,
+    },
+    montoCierre: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
     },
 
-    idReferencia: {
-      type: DataTypes.UUID,
-      allowNull: false,
+    estado: {
+      type: DataTypes.ENUM,
+      values: ["Abierta", "Cerrada"],
+      defaultValue: "Abierta",
     },
   });
 };

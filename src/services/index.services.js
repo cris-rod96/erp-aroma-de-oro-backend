@@ -5,6 +5,7 @@ import usuarioService from "./usuario/index.service.js";
 import nominaService from "./nomina/index.service.js";
 import authService from "./auth/auth.service.js";
 import ticketService from "./ticket/index.service.js";
+import cajaService from "./caja/index.service.js";
 
 export {
   authService,
@@ -14,4 +15,5 @@ export {
   usuarioService,
   nominaService,
   ticketService,
+  cajaService,
 };

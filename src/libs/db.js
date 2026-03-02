@@ -18,6 +18,8 @@ const {
   CuentasPorCobrar,
   DetalleLiquidacion,
   Retencion,
+  Movimiento,
+  Venta,
   Caja,
 } = sq.models;
 
@@ -37,5 +39,7 @@ export {
   CuentasPorCobrar,
   DetalleLiquidacion,
   Retencion,
+  Movimiento,
+  Venta,
   Caja,
 };
