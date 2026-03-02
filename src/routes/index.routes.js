@@ -5,6 +5,7 @@ import productoRouter from "./producto/producto.route.js";
 import nominaRouter from "./nomina/nomina.route.js";
 import personaRouter from "./persona/persona.route.js";
 import authRouter from "./auth/auth.route.js";
+import ticketRouter from "./ticket/ticket.route.js";
 
 const rootRouter = Router();
 
@@ -14,5 +15,5 @@ rootRouter.use("/productos", productoRouter);
 rootRouter.use("/nominas", nominaRouter);
 rootRouter.use("/personas", personaRouter);
 rootRouter.use("/auth", authRouter);
-
+rootRouter.use("/tickets", ticketRouter);
 export default rootRouter;
