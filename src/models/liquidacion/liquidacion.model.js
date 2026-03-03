@@ -83,7 +83,7 @@ const LiquidacionModel = (sq) => {
     },
 
     // Persona que vende su producto
-    ProveedorId: {
+    ProductorId: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {

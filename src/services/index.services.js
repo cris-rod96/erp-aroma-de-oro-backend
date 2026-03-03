@@ -7,6 +7,7 @@ import authService from "./auth/auth.service.js";
 import ticketService from "./ticket/index.service.js";
 import cajaService from "./caja/index.service.js";
 import movimientoService from "./movimiento/index.service.js";
+import liquidacionService from "./liquidacion/index.service.js";
 
 export {
   authService,
@@ -18,4 +19,5 @@ export {
   ticketService,
   cajaService,
   movimientoService,
+  liquidacionService,
 };
