@@ -1,13 +1,14 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv'
 
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config()
 }
 
 export const {
   PORT = 3000,
   DATABASE_DEV_URI,
   DATABASE_PROD_URI,
-  NODE_ENV = "development",
+  NODE_ENV = 'development',
   SECRET_WORD,
-} = process.env;
+  PASSWORD_DEFAULT,
+} = process.env

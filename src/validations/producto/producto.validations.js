@@ -1,22 +1,19 @@
-import { body } from "express-validator";
+import { body } from 'express-validator'
 
 const validacionCrearProducto = [
-  body("nombre")
+  body('nombre').notEmpty().withMessage('El nombre del producto es obligatorio'),
+  body('unidadMedida')
     .notEmpty()
-    .withMessage("El nombre del producto es obligatorio"),
-  body("unidadMedida")
-    .notEmpty()
-    .withMessage("La unidad de medida es obligatoria")
+    .withMessage('La unidad de medida es obligatoria')
     .trim()
-    .toLowerCase()
-    .isIn(["quintales"]),
-  body("stock")
+    .isIn(['Quintales', 'Kilogramos', 'Libras', 'Unidades']),
+  body('stock')
     .notEmpty()
-    .withMessage("El stock es obligatorio.")
+    .withMessage('El stock es obligatorio.')
     .isNumeric()
-    .withMessage("El stock debe ser un valor numérico"),
-];
+    .withMessage('El stock debe ser un valor numérico'),
+]
 
 export default {
   validacionCrearProducto,
-};
+}

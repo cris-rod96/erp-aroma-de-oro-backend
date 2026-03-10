@@ -1,43 +1,53 @@
-import { Router } from "express";
-import { personaControllers } from "../../controllers/index.controllers.js";
-import {
-  jwtMiddlewares,
-  validatorMiddlewares,
-} from "../../middlewares/index.middlewares.js";
-import { validatorPersona } from "../../validations/index.validations.js";
+import { Router } from 'express'
+import { personaControllers } from '../../controllers/index.controllers.js'
+import { jwtMiddlewares, validatorMiddlewares } from '../../middlewares/index.middlewares.js'
+import { validatorPersona } from '../../validations/index.validations.js'
 
-const personaRouter = Router();
+const personaRouter = Router()
 
-personaRouter.get(
-  "/listar/todos",
-  jwtMiddlewares.verificarToken,
-  personaControllers.listarPersonas,
-);
+personaRouter.get('/listar/todos', jwtMiddlewares.verificarToken, personaControllers.listarPersonas)
 
 personaRouter.get(
-  "/buscar-persona",
+  '/listar/productores',
   jwtMiddlewares.verificarToken,
-  personaControllers.listarPersonaPorClave,
-);
+  personaControllers.listarProductores
+)
+
+personaRouter.get(
+  '/listar/trabajadores',
+  jwtMiddlewares.verificarToken,
+  personaControllers.listarTrabajadores
+)
+
+personaRouter.get(
+  '/listar/compradores',
+  jwtMiddlewares.verificarToken,
+  personaControllers.listarCompradores
+)
+
+personaRouter.get(
+  '/buscar-persona',
+  jwtMiddlewares.verificarToken,
+  personaControllers.listarPersonaPorClave
+)
 
 personaRouter.post(
-  "/agregar",
+  '/agregar',
   jwtMiddlewares.verificarToken,
-  validatorPersona.validacionCrearPersona,
   validatorMiddlewares.validarDatos,
-  personaControllers.registrarPersona,
-);
+  personaControllers.registrarPersona
+)
 
-personaRouter.put(
-  "/actualizar-informacion/:id",
+personaRouter.patch(
+  '/actualizar-informacion/:id',
   jwtMiddlewares.verificarToken,
-  personaControllers.actualizarPersona,
-);
+  personaControllers.actualizarPersona
+)
 
 personaRouter.delete(
-  "/borrar-persona/:id",
+  '/borrar-persona/:id',
   jwtMiddlewares.verificarToken,
-  personaControllers.borrarPersona,
-);
+  personaControllers.borrarPersona
+)
 
-export default personaRouter;
+export default personaRouter

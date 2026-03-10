@@ -1,10 +1,10 @@
-import { DATABASE_CONFIG } from "../config/config.js";
-import { Sequelize } from "sequelize";
-import { models } from "../models/index.models.js";
+import { DATABASE_CONFIG } from '../config/config.js'
+import { Sequelize } from 'sequelize'
+import { models } from '../models/index.models.js'
 
-const sq = new Sequelize(DATABASE_CONFIG.URI, DATABASE_CONFIG.OPTIONS);
+const sq = new Sequelize(DATABASE_CONFIG.URI, DATABASE_CONFIG.OPTIONS)
 
-models.forEach((model) => model(sq));
+models.forEach((model) => model(sq))
 
 const {
   Empresa,
@@ -21,10 +21,13 @@ const {
   Movimiento,
   Venta,
   Caja,
-} = sq.models;
+} = sq.models
 
-Persona.hasMany(Nomina, { foreignKey: "PersonaId" });
-Nomina.belongsTo(Persona, { foreignKey: "PersonaId" });
+Persona.hasMany(Nomina, { foreignKey: 'PersonaId' })
+Nomina.belongsTo(Persona, { foreignKey: 'PersonaId' })
+
+Caja.hasMany(Movimiento, { foreignKey: 'CajaId' })
+Movimiento.belongsTo(Caja, { foreignKey: 'CajaId' })
 
 export {
   sq,
@@ -42,4 +45,4 @@ export {
   Movimiento,
   Venta,
   Caja,
-};
+}

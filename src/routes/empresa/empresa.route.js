@@ -1,30 +1,21 @@
-import { Router } from "express";
-import { empresaControllers } from "../../controllers/index.controllers.js";
-import {
-  jwtMiddlewares,
-  validatorMiddlewares,
-} from "../../middlewares/index.middlewares.js";
-import { validatorEmpresa } from "../../validations/index.validations.js";
-empresaControllers;
+import { Router } from 'express'
+import { empresaControllers } from '../../controllers/index.controllers.js'
+import { jwtMiddlewares, validatorMiddlewares } from '../../middlewares/index.middlewares.js'
+empresaControllers
 
-const empresaRouter = Router();
+const empresaRouter = Router()
 
-empresaRouter.get(
-  "/info",
-  jwtMiddlewares.verificarToken,
-  empresaControllers.listarInformacion,
-);
+empresaRouter.get('/info', jwtMiddlewares.verificarToken, empresaControllers.listarInformacion)
 empresaRouter.post(
-  "/create",
+  '/create',
   jwtMiddlewares.verificarToken,
-  validatorEmpresa.validacionCrearEmpresa,
   validatorMiddlewares.validarDatos,
-  empresaControllers.crearEmpresa,
-);
-empresaRouter.put(
-  "/update/:id",
+  empresaControllers.crearEmpresa
+)
+empresaRouter.patch(
+  '/update/:id',
   jwtMiddlewares.verificarToken,
-  empresaControllers.actualizarInformacion,
-);
+  empresaControllers.actualizarInformacion
+)
 
-export default empresaRouter;
+export default empresaRouter

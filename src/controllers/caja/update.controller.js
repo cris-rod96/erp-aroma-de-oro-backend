@@ -1,18 +1,20 @@
-import { cajaService } from "../../services/index.services.js";
+import { cajaService } from '../../services/index.services.js'
 
 const cerrarCaja = async (req, res) => {
   try {
-    const { id } = req.params;
-    const data = req.body;
+    const { id } = req.params
 
-    const { code, message, resumen } = await cajaService.cerrarCaja(id, data);
+    const { code, message, resumen } = await cajaService.cerrarCaja(id, {
+      montoFisico: 5000.0,
+    })
 
-    res.status(code).json(resumen ? { message, resumen } : { message });
+    res.status(code).json(resumen ? { message, resumen } : { message })
   } catch (error) {
+    console.log(error.message)
     res.status(500).json({
-      message: "Error interno en el servidor. Intente de nuevo.",
-    });
+      message: 'Error interno en el servidor. Intente de nuevo.',
+    })
   }
-};
+}
 
-export { cerrarCaja };
+export { cerrarCaja }

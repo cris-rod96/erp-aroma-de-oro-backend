@@ -1,7 +1,7 @@
-import { DataTypes } from "sequelize";
+import { DataTypes } from 'sequelize'
 
 const MovimientoModel = (sq) => {
-  sq.define("Caja", {
+  sq.define('Movimiento', {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -15,13 +15,13 @@ const MovimientoModel = (sq) => {
 
     tipoMovimiento: {
       type: DataTypes.ENUM,
-      values: ["Ingreso", "Egreso"],
+      values: ['Ingreso', 'Egreso'],
       allowNull: false,
     },
 
     categoria: {
       type: DataTypes.ENUM,
-      values: ["Compra", "Venta", "Gasto", "Nomina"],
+      values: ['Compra', 'Venta', 'Gasto', 'Nomina'],
       allowNull: false,
     },
 
@@ -39,11 +39,11 @@ const MovimientoModel = (sq) => {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: "Cajas",
-        key: "id",
+        model: 'Cajas',
+        key: 'id',
       },
     },
-  });
-};
+  })
+}
 
-export default MovimientoModel;
+export default MovimientoModel
