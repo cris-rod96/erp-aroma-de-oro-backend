@@ -57,8 +57,13 @@ const CajaModel = (sq) => {
       },
     },
     {
-      timestamps: false, // ¡Recomendado para auditoría!
+      timestamps: true, // ¡Recomendado para auditoría!
       tableName: 'Cajas',
+      hooks: {
+        beforeCreate: (caja) => {
+          caja.montoEsperado = caja.montoApertura
+        },
+      },
     }
   )
 }

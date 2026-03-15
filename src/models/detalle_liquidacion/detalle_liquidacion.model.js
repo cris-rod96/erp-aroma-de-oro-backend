@@ -28,7 +28,7 @@ const DetalleLiquidacionModel = (sq) => {
       unidad: {
         type: DataTypes.ENUM,
         allowNull: false,
-        values: ['Quintal'],
+        values: ['Quintales', 'Kilogramos', 'Libras', 'Unidades'],
       },
 
       cantidad: {

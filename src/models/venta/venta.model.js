@@ -97,7 +97,7 @@ const VentasModel = (sq) => {
       },
     },
     {
-      timestamps: false, // Crea automáticamente createdAt y updatedAt
+      timestamps: true, // Crea automáticamente createdAt y updatedAt
       tableName: 'Ventas',
     }
   )
