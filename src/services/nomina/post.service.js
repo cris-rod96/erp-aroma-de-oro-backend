@@ -1,61 +1,105 @@
-import { Op } from "sequelize";
-import { Nomina, Persona } from "../../libs/db.js";
+import { Op } from 'sequelize'
+import { Caja, Movimiento, Nomina, Persona, sq, Usuario } from '../../libs/db.js'
 
-const pagarJornal = async (PersonaId, data) => {
-  const persona = await Persona.findOne({
-    where: {
-      id: PersonaId,
-    },
-  });
+const pagarJornal = async (data) => {
+  const { UsuarioId, diasTrabajados, valorJornal, bono, descuento, CajaId, PersonaId } = data
+  const t = await sq.transaction()
 
-  if (!persona) return { code: 404, message: "Empleado no encontrado" };
+  try {
+    const persona = await Persona.findOne({
+      where: { id: PersonaId },
+      transaction: t,
+    })
 
-  const hoy = new Date();
-  const inicio = new Date(
-    hoy.getFullYear(),
-    hoy.getMonth(),
-    hoy.getDate(),
-    0,
-    0,
-    0,
-  );
-  const fin = new Date(
-    hoy.getFullYear(),
-    hoy.getMonth(),
-    hoy.getDate(),
-    23,
-    59,
-    59,
-  );
+    if (!persona) {
+      await t.rollback()
+      return { code: 400, message: 'Empleado no encontrado' }
+    }
 
-  const jornalPagado = await Nomina.findOne({
-    where: {
-      PersonaId,
-      fechaPago: {
-        [Op.between]: [inicio, fin],
+    // Validar caja
+
+    const caja = await Caja.findOne({
+      where: {
+        id: CajaId,
       },
-    },
-  });
+      transaction: t,
+    })
 
-  if (jornalPagado)
-    return {
-      code: 400,
-      message: "Este empleado ya tiene un pago registrado hoy.",
-    };
+    if (!caja || caja.estado !== 'Abierta') {
+      await t.rollback()
+      return { code: 400, message: 'La caja no esta abierta o no existe' }
+    }
 
-  const pago = await Nomina.create({
-    ...data,
-    PersonaId,
-  });
-  return pago
-    ? {
-        code: 200,
-        message: "Pago registrado con éxito",
+    const subTotal = parseFloat(diasTrabajados) * parseFloat(valorJornal) + parseFloat(bono || 0)
+    const total = subTotal - parseFloat(descuento || 0)
+
+    if (total > parseFloat(caja.montoEsperado)) {
+      await t.rollback()
+      return { code: 400, message: 'Saldo insuficiente en caja para este pago' }
+    }
+
+    const hoy = new Date()
+    const inicio = new Date(hoy.setHours(0, 0, 0, 0))
+    const fin = new Date(hoy.setHours(23, 59, 59, 999))
+
+    const pagoExistente = await Nomina.findOne({
+      where: {
+        PersonaId,
+        fechaPago: { [Op.between]: [inicio, fin] },
+      },
+      transaction: t,
+    })
+
+    if (pagoExistente) {
+      await t.rollback()
+      return { code: 400, message: 'Ya existe un pago hoy para este empleado' }
+    }
+
+    // Crear el registro de Nomina
+    const pago = await Nomina.create(
+      {
+        diasTrabajados,
+        subTotal,
+        descuento,
+        valorJornal,
+        total,
+        bono,
+        PersonaId,
+        UsuarioId,
+      },
+      { transaction: t }
+    )
+
+    // Crear movimiento
+    await Movimiento.create(
+      {
+        monto: total,
+        tipoMovimiento: 'Egreso',
+        categoria: 'Nomina',
+        CajaId,
+        idReferencia: pago.id,
+      },
+      {
+        transaction: t,
       }
-    : {
-        code: 400,
-        message: "Error al registrar el pago. Intente de nuevo.",
-      };
-};
+    )
 
-export { pagarJornal };
+    // Actulizar caja
+    await caja.decrement('montoEsperado', { by: total, transaction: t })
+    await t.commit()
+
+    const cajaActualizada = await Caja.findByPk(CajaId)
+
+    return {
+      code: 200,
+      message: 'Pago realizado y monto de caja actualizado',
+      caja: cajaActualizada,
+    }
+  } catch (error) {
+    if (t) await t.rollback()
+    console.log('Error en pagar jornal: ', error)
+    return { code: 500, message: 'Error interno al procesar el pago' }
+  }
+}
+
+export { pagarJornal }

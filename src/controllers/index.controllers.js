@@ -13,6 +13,7 @@ import cuentasPorCobrarControllers from './cuentas-por-cobrar/index.controller.j
 import cuentasPorPagarControllers from './cuentas-por-pagar/index.controller.js'
 import liquidacionControllers from './liquidacion/index.controller.js'
 import ventaControllers from './venta/index.controller.js'
+import reporteControllers from './reporte/index.controller.js'
 
 export {
   authControllers,
@@ -28,4 +29,5 @@ export {
   cuentasPorPagarControllers,
   liquidacionControllers,
   ventaControllers,
+  reporteControllers,
 }

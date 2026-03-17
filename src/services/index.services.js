@@ -12,6 +12,7 @@ import liquidacionService from './liquidacion/index.service.js'
 import cuentasPorCobrarService from './cuentas-por-cobrar/index.service.js'
 import cuentasPorPagarService from './cuentas-por-pagar/index.service.js'
 import ventaService from './venta/index.service.js'
+import reporteService from './reporte/index.service.js'
 
 export {
   authService,
@@ -27,4 +28,5 @@ export {
   cuentasPorCobrarService,
   cuentasPorPagarService,
   ventaService,
+  reporteService,
 }

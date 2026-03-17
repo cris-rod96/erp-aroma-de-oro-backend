@@ -21,6 +21,7 @@ const {
   Movimiento,
   Venta,
   Caja,
+  Reporte,
 } = sq.models
 
 Persona.hasMany(Nomina, { foreignKey: 'PersonaId' })
@@ -64,6 +65,8 @@ Movimiento.belongsTo(Caja, { foreignKey: 'CajaId' })
 
 Persona.hasMany(Nomina, { foreignKey: 'PersonaId' })
 Nomina.belongsTo(Persona, { foreignKey: 'PersonaId' })
+Usuario.hasMany(Nomina, { foreignKey: 'UsuarioId' })
+Nomina.belongsTo(Usuario, { foreignKey: 'UsuarioId' })
 
 Liquidacion.hasMany(Retencion, { foreignKey: 'LiquidacionId' })
 Retencion.belongsTo(Liquidacion, { foreignKey: 'LiquidacionId' })
@@ -95,6 +98,9 @@ CuentasPorPagar.belongsTo(Liquidacion, { foreignKey: 'LiquidacionId' })
 Venta.hasMany(CuentasPorCobrar, { foreignKey: 'VentaId' })
 CuentasPorCobrar.hasMany(Venta, { foreignKey: 'VentaId' })
 
+Usuario.hasMany(Reporte, { foreignKey: 'UsuarioId' })
+Reporte.belongsTo(Usuario, { foreignKey: 'UsuarioId' })
+
 export {
   sq,
   Empresa,
@@ -111,4 +117,5 @@ export {
   Movimiento,
   Venta,
   Caja,
+  Reporte,
 }

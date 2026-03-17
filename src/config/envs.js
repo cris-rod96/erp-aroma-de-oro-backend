@@ -11,4 +11,7 @@ export const {
   NODE_ENV = 'development',
   SECRET_WORD,
   PASSWORD_DEFAULT,
+  CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET,
+  CLOUDINARY_API_CLOUD_NAME,
 } = process.env

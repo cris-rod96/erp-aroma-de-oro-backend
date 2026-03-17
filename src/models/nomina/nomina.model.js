@@ -1,4 +1,4 @@
-import { DataTypes, Sequelize } from 'sequelize'
+import { DataTypes } from 'sequelize'
 
 const NominaModel = (sq) => {
   sq.define(
@@ -9,12 +9,25 @@ const NominaModel = (sq) => {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
-
       fechaPago: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
       },
-
+      diasTrabajados: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+        validate: {
+          min: 1,
+        },
+      },
+      valorJornal: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        validate: {
+          min: 0.0,
+        },
+      },
       subTotal: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
@@ -23,6 +36,13 @@ const NominaModel = (sq) => {
         },
       },
 
+      bono: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        validate: {
+          min: 0.0,
+        },
+      },
       descuento: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: true,
@@ -31,7 +51,6 @@ const NominaModel = (sq) => {
           min: 0.0,
         },
       },
-
       total: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
@@ -39,12 +58,20 @@ const NominaModel = (sq) => {
           min: 0.0,
         },
       },
-
       PersonaId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
           model: 'Personas',
+          key: 'id',
+        },
+      },
+
+      UsuarioId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: 'Usuarios',
           key: 'id',
         },
       },
