@@ -16,7 +16,7 @@ const ReporteModel = (sq) => {
       },
       tipo: {
         type: DataTypes.ENUM,
-        values: ['CAJA', 'VENTAS', 'COMPRAS', 'IVENTARIO', 'GENERAL'],
+        values: ['CAJA', 'VENTAS', 'COMPRAS', 'INVENTARIO', 'GENERAL', 'NOMINA'],
         allowNull: false,
       },
       url: {

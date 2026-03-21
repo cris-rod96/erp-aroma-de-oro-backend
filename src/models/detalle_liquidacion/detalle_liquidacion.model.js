@@ -1,4 +1,4 @@
-import { DataTypes, Sequelize } from 'sequelize'
+import { DataTypes } from 'sequelize'
 
 const DetalleLiquidacionModel = (sq) => {
   sq.define(
@@ -16,8 +16,8 @@ const DetalleLiquidacionModel = (sq) => {
       },
 
       calificacion: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
+        type: DataTypes.STRING, // Cambiado a STRING por si usan letras (A, B, C) o números
+        allowNull: true,
       },
 
       porcentajeIVa: {
@@ -31,10 +31,35 @@ const DetalleLiquidacionModel = (sq) => {
         values: ['Quintales', 'Kilogramos', 'Libras', 'Unidades'],
       },
 
+      // Peso que llega originalmente en la báscula (Peso Bruto)
       cantidad: {
         type: DataTypes.FLOAT,
         allowNull: false,
       },
+
+      // --- CAMPOS DE CALIDAD ---
+      humedad: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0.0,
+      },
+
+      impurezas: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0.0,
+      },
+
+      // Cuántas unidades (ej: kilos) se restaron por humedad/impurezas
+      descuentoMerma: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0.0,
+      },
+
+      // Cantidad final que se multiplica por el precio (Peso Neto)
+      cantidadNeta: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+      },
+      // -------------------------
 
       precio: {
         type: DataTypes.DECIMAL(10, 2),
@@ -70,7 +95,7 @@ const DetalleLiquidacionModel = (sq) => {
       },
     },
     {
-      timestamps: false,
+      timestamps: true,
       tableName: 'DetalleLiquidaciones',
     }
   )

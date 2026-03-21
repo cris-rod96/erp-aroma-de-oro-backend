@@ -1,7 +1,6 @@
 import {
   Liquidacion,
   Persona,
-  Ticket,
   Usuario,
   Caja,
   Movimiento,
@@ -32,21 +31,17 @@ const convertirAQuintales = (cantidad, unidadOrigen) => {
 
 const registrarLiquidacion = async (data) => {
   const { liquidacion, detalle, retencion, CajaId } = data
-  const { TicketId, UsuarioId, ProductorId } = liquidacion
+  const { UsuarioId, ProductorId } = liquidacion
 
   // 1. Validaciones previas
-  const [usuario, productor, ticket, caja] = await Promise.all([
+  const [usuario, productor, caja] = await Promise.all([
     Usuario.findOne({ where: { id: UsuarioId } }),
     Persona.findOne({ where: { id: ProductorId, tipo: 'Productor' } }),
-    Ticket.findOne({ where: { id: TicketId } }),
     CajaId ? Caja.findOne({ where: { id: CajaId } }) : null,
   ])
 
   if (!usuario) return { code: 400, message: 'Usuario no encontrado.' }
   if (!productor) return { code: 400, message: 'El productor no existe.' }
-  if (!ticket) return { code: 400, message: 'El ticket no existe.' }
-  if (ticket.estadoTicket === 'Liquidado')
-    return { code: 400, message: 'Operación cancelada. El ticket ya fue liquidado.' }
   if (!caja) return { code: 400, message: 'Debe existir una caja para esta operación' }
   if (caja.estado !== 'Abierta')
     return { code: 400, message: 'La caja se encuentra cerrada. Debe abrir una nueva.' }
@@ -107,9 +102,10 @@ const registrarLiquidacion = async (data) => {
     }
 
     // 8. Movimiento de Caja y Actualización de Saldo Esperado
-    const montoEfectivoPagado = parseFloat(liquidacion.montoAbonado)
+    const montoEfectivoPagado = parseFloat(liquidacion.pagoEfectivo)
+
     if (montoEfectivoPagado > 0) {
-      // Registrar el egreso
+      // 8.1 Registrar el movimiento de egreso (Auditoría)
       await Movimiento.create(
         {
           tipoMovimiento: 'Egreso',
@@ -121,21 +117,24 @@ const registrarLiquidacion = async (data) => {
         { transaction: t }
       )
 
-      // Actualizar el monto esperado de la caja físicamente en la tabla
-      // Esto hace que el Dashboard sea mucho más rápido al no tener que sumar todo de nuevo
-      await caja.update(
-        { montoEsperado: parseFloat(caja.montoEsperado) - montoEfectivoPagado },
-        { transaction: t }
-      )
+      /**
+       * USO DE DECREMENT:
+       * Evitamos traer el valor a JS, restarlo y volverlo a enviar.
+       * La base de datos resta el valor internamente, garantizando
+       * integridad si hay dos liquidaciones al mismo milisegundo.
+       */
+      await caja.decrement({ saldoActual: montoEfectivoPagado }, { transaction: t })
     }
 
     // 9. Finalizar Ticket
-    await ticket.update({ estadoTicket: 'Liquidado' }, { transaction: t })
+    // await ticket.update({ estadoTicket: 'Liquidado' }, { transaction: t })
 
     await t.commit()
+    const cajaActualizada = await Caja.findByPk(CajaId)
 
     return {
       code: 201,
+      caja: cajaActualizada,
       message: 'Liquidación creada con éxito y saldo de caja actualizado.',
       id: nuevaLiquidacion.id,
     }

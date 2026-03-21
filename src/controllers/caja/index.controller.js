@@ -5,7 +5,7 @@ import {
   listarTodas,
 } from './get.controller.js'
 import { abrirCaja } from './post.controller.js'
-import { cerrarCaja } from './update.controller.js'
+import { cerrarCaja, postInyeccionBanco } from './update.controller.js'
 
 export default {
   abrirCaja,
@@ -14,4 +14,5 @@ export default {
   listarTodas,
   listarPorRango,
   cerrarCaja,
+  postInyeccionBanco,
 }

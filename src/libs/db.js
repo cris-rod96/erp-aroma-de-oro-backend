@@ -51,10 +51,10 @@ Liquidacion.belongsTo(Usuario, { foreignKey: 'UsuarioId' })
 Persona.hasMany(Liquidacion, { foreignKey: 'ProductorId' })
 Liquidacion.belongsTo(Persona, { foreignKey: 'ProductorId' })
 
-Ticket.hasMany(Liquidacion, { foreignKey: 'TicketId' })
-Liquidacion.belongsTo(Ticket, { foreignKey: 'TicketId' })
+// Ticket.hasMany(Liquidacion, { foreignKey: 'TicketId' })
+// Liquidacion.belongsTo(Ticket, { foreignKey: 'TicketId' })
 
-Liquidacion.hasMany(DetalleLiquidacion, { foreignKey: 'LiquidacionId' })
+Liquidacion.hasOne(DetalleLiquidacion, { foreignKey: 'LiquidacionId' })
 DetalleLiquidacion.belongsTo(Liquidacion, { foreignKey: 'LiquidacionId' })
 
 Producto.hasMany(DetalleLiquidacion, { foreignKey: 'ProductoId' })

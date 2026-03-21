@@ -12,4 +12,10 @@ cajaRouter.get('/obtener-abierta', cajaControllers.obtenerCajaAbierta)
 cajaRouter.get('/listar/cerradas', cajaControllers.listarCerradas)
 cajaRouter.get('/listar/rango', cajaControllers.listarPorRango)
 
+cajaRouter.post(
+  '/inyectar-banco',
+  jwtMiddlewares.verificarToken,
+  cajaControllers.postInyeccionBanco
+)
+
 export default cajaRouter

@@ -1,5 +1,5 @@
 import { Op } from 'sequelize'
-import { Caja, Liquidacion, Movimiento, Nomina, Venta } from '../../libs/db.js'
+import { Caja, Liquidacion, Movimiento, Nomina, Persona, Venta } from '../../libs/db.js'
 
 const listarPorCaja = async (CajaId) => {
   const caja = await Caja.findOne({ where: { id: CajaId } })
@@ -40,7 +40,7 @@ const listarTodos = async () => {
     include: [
       { model: Liquidacion, as: 'detalleCompra', required: false },
       { model: Venta, as: 'detalleVenta', required: false },
-      { model: Nomina, as: 'detalleNomina', required: false },
+      { model: Nomina, as: 'detalleNomina', required: false, include: [Persona] },
       { model: Caja },
     ],
   })

@@ -55,7 +55,7 @@ const PersonaModel = (sq) => {
       },
     },
     {
-      timestamps: false,
+      timestamps: true,
       tableName: 'Personas',
     }
   )

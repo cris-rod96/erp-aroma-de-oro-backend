@@ -1,16 +1,65 @@
 import { Op } from 'sequelize'
-import { Caja } from '../../libs/db.js'
+import {
+  Caja,
+  DetalleLiquidacion,
+  Liquidacion,
+  Movimiento,
+  Nomina,
+  Persona,
+  Producto,
+  Usuario,
+  Venta,
+} from '../../libs/db.js'
 
 // Función genérica para evitar repetir código
 const responder = (cajas) => ({ code: 200, cajas })
 
 const listarTodas = async () => {
-  const cajas = await Caja.findAll({ order: [['fechaApertura', 'DESC']] })
+  const cajas = await Caja.findAll({
+    order: [['fechaApertura', 'DESC']],
+    include: [
+      {
+        model: Movimiento,
+        include: [
+          {
+            model: Liquidacion,
+            as: 'detalleCompra',
+            required: false,
+            include: [
+              {
+                model: Persona,
+              },
+              {
+                model: DetalleLiquidacion,
+                include: [Producto],
+              },
+              {
+                model: Usuario,
+              },
+            ],
+          },
+          {
+            model: Venta,
+            as: 'detalleVenta',
+            required: false,
+            include: [Persona, Usuario],
+          },
+
+          {
+            model: Nomina,
+            as: 'detalleNomina',
+            required: false,
+            include: [Persona, Usuario],
+          },
+        ],
+      },
+    ],
+  })
   return responder(cajas)
 }
 
 const obtenerCajaAbierta = async () => {
-  const caja = await Caja.findOne({ where: { estado: 'Abierta' } })
+  const caja = await Caja.findOne({ where: { estado: 'Abierta' }, include: [Movimiento] })
   return {
     code: 200,
     caja,

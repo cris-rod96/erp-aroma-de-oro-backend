@@ -35,7 +35,7 @@ const RetencionModel = (sq) => {
       },
     },
     {
-      timestamps: false,
+      timestamps: true,
       tableName: 'Retenciones',
     }
   )

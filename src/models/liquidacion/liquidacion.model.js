@@ -94,17 +94,17 @@ const LiquidacionModel = (sq) => {
         },
       },
 
-      TicketId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-          model: 'Tickets',
-          key: 'id',
-        },
-      },
+      // TicketId: {
+      //   type: DataTypes.UUID,
+      //   allowNull: false,
+      //   references: {
+      //     model: 'Tickets',
+      //     key: 'id',
+      //   },
+      // },
     },
     {
-      timestamps: false,
+      timestamps: true,
       tableName: 'Liquidaciones',
     }
   )

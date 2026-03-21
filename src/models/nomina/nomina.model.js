@@ -77,7 +77,7 @@ const NominaModel = (sq) => {
       },
     },
     {
-      timestamps: false,
+      timestamps: true,
       tableName: 'Nominas',
     }
   )

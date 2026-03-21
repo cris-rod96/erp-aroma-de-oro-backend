@@ -5,7 +5,7 @@ const listarTodas = async () => {
     include: [
       {
         model: Liquidacion,
-        include: [Usuario, Persona, Ticket],
+        include: [Usuario, Persona],
       },
     ],
   })
@@ -23,7 +23,7 @@ const listarPendientes = async () => {
     include: [
       {
         model: Liquidacion,
-        include: [Usuario, Persona, Ticket],
+        include: [Usuario, Persona],
       },
     ],
   })
@@ -42,7 +42,7 @@ const listarPagadas = async () => {
     include: [
       {
         model: Liquidacion,
-        include: [Usuario, Persona, Ticket],
+        include: [Usuario, Persona],
       },
     ],
   })
