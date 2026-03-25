@@ -20,12 +20,12 @@ const UsuarioModel = (sq) => {
       },
       telefono: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true,
       },
       correo: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true,
       },
       clave: {

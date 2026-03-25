@@ -29,8 +29,8 @@ const PersonaModel = (sq) => {
       },
       telefono: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: true,
+        unique: false,
       },
       correo: {
         type: DataTypes.STRING,

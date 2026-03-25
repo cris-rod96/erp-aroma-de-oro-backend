@@ -6,7 +6,7 @@ const registrarPersona = async (req, res) => {
     const { code, message } = await personaService.registrarPersona(data)
     res.status(code).json({ message })
   } catch (error) {
-    console.log(error.message)
+    console.log(error)
     res.status(500).json({
       message: 'Error interno en el servidor. Intente de nuevo',
     })

@@ -51,11 +51,13 @@ const validacionCrearPersona = [
     .withMessage('El tipo de persona no es válido'),
 
   body('telefono')
-    .notEmpty()
-    .withMessage('El teléfono es obligatorio')
+    .optional({ checkFalsy: true }) // Ignora el campo si no viene, si viene null, o si es un string vacío ""
     .matches(/^[0-9]{10}$/)
-    .withMessage('El teléfono debe tener exactamente 10 digítos numéricos'),
+    .withMessage('El teléfono debe tener exactamente 10 dígitos numéricos'),
+
+  // --- CORREO OPCIONAL ---
   body('correo')
+    .optional({ checkFalsy: true })
     .matches(/^[^\s@]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
     .withMessage('Debe ser un correo válido y realista')
     .normalizeEmail(),
