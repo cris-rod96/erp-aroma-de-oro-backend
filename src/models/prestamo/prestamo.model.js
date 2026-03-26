@@ -21,6 +21,10 @@ const PrestamoModel = (sq) => {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
+      comentario: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
       montoCuota: {
         // Cuánto se le descuenta por periodo (opcional)
         type: DataTypes.DECIMAL(10, 2),

@@ -22,54 +22,76 @@ const VentasModel = (sq) => {
         defaultValue: 'Quintales',
       },
       cantidadBruta: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-        comment: 'Peso tal cual sale de báscula',
       },
       calificacion: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0.0,
-        comment: 'Porcentaje de humedad o calidad (castigo al peso)',
+        comment: 'Porcentaje de humedad/calidad',
       },
       impurezas: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0.0,
-        comment: 'Porcentaje de impurezas (castigo al peso)',
+        comment: 'Porcentaje de impurezas',
       },
       descuentoMerma: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0.0,
         comment: 'Peso fijo restado (ej: sacos)',
       },
       cantidadNeta: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-        comment: 'Cantidad real facturada después de castigos',
+        comment: 'Peso final tras descuentos',
       },
-      // --- BLOQUE FINANCIERO ---
+      // --- BLOQUE FINANCIERO PRINCIPAL ---
       precioUnitario: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
-      montoAnticipo: {
-        type: DataTypes.DECIMAL(10, 2),
-        defaultValue: 0.0,
-        comment: 'Dinero que el comprador ya entregó previamente (préstamo/adelanto)',
-      },
       totalFactura: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-        comment: 'Valor total de la mercadería (Peso Neto * Precio)',
+        comment: 'Subtotal (Cantidad Neta * Precio)',
+      },
+      // --- RETENCIONES (SRI / LOCAL) ---
+      retencionConcepto: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: 'Ej: Retención IR 1% o Código específico',
+      },
+      retencionPorcentaje: {
+        type: DataTypes.DECIMAL(5, 2),
+        allowNull: true,
+        defaultValue: 0.0,
+      },
+      valorRetenido: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+        defaultValue: 0.0,
+        comment: 'Monto que se descuenta del pago por retención',
+      },
+      // --- AJUSTES Y CRUCE DE CUENTAS ---
+      montoAnticipo: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0.0,
+        comment: 'Créditos previos que el cliente ya tenía',
+      },
+      totalALiquidar: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        comment: 'Dinero real final: (TotalFactura - ValorRetenido - MontoAnticipo)',
       },
       montoAbonado: {
         type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0.0,
-        comment: 'Dinero efectivo que entra a caja EN ESTE MOMENTO',
+        comment: 'Efectivo/Transferencia que entra a caja hoy',
       },
       montoPendiente: {
         type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0.0,
-        comment: 'Saldo restante por cobrar (Total - Anticipo - Abono Hoy)',
+        comment: 'Saldo que queda debiendo (TotalALiquidar - MontoAbonado)',
       },
       tipoVenta: {
         type: DataTypes.ENUM,

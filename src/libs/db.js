@@ -125,6 +125,11 @@ Movimiento.belongsTo(Gasto, {
   constraints: false,
   as: 'detalleGasto',
 })
+Movimiento.belongsTo(Anticipo, {
+  foreignKey: 'idReferencia',
+  constraints: false,
+  as: 'detalleAnticipo',
+})
 
 // --- CUENTAS POR COBRAR / PAGAR ---
 Venta.hasMany(CuentasPorCobrar, { foreignKey: 'VentaId' })
@@ -188,6 +193,10 @@ CuentasPorCobrar.belongsTo(Venta, {
 })
 
 Movimiento.belongsTo(Anticipo, {
+  foreignKey: 'idReferencia',
+  constraints: false,
+})
+Movimiento.belongsTo(Prestamo, {
   foreignKey: 'idReferencia',
   constraints: false,
 })

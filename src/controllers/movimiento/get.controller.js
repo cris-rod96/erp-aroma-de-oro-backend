@@ -44,6 +44,7 @@ const listarTodos = async (req, res) => {
       movimientos,
     })
   } catch (error) {
+    console.log(error.message)
     res.status(500).json({
       message: 'Error interno en el servidor. Intente de nuevo.',
     })

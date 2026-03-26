@@ -1,5 +1,6 @@
 import { Op } from 'sequelize'
 import {
+  Anticipo,
   Caja,
   DetalleLiquidacion,
   Gasto,
@@ -7,7 +8,9 @@ import {
   Movimiento,
   Nomina,
   Persona,
+  Prestamo,
   Producto,
+  Usuario,
   Venta,
 } from '../../libs/db.js'
 
@@ -62,6 +65,8 @@ const listarTodos = async () => {
       { model: Venta, as: 'detalleVenta', required: false, include: [Producto] },
       { model: Gasto, as: 'detalleGasto', required: false },
       { model: Nomina, as: 'detalleNomina', required: false, include: [Persona] },
+      { model: Prestamo, as: 'detallePrestamo', required: false, include: [Persona, Usuario] },
+      { model: Anticipo, as: 'detalleAnticipo', required: false, include: [Persona] },
       { model: Caja },
     ],
   })
