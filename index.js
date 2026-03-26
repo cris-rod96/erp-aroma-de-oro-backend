@@ -7,8 +7,8 @@ server.listen(PORT, () => {
   console.log(`Server a la escucha por el puerto: ${PORT}`)
   sq.sync({
     logging: false,
-    force: true,
-    alter: true,
+    force: false,
+    alter: false,
   })
     .then(() => {
       console.log('Base de datos conectada')
