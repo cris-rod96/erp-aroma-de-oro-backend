@@ -149,7 +149,8 @@ const registrarLiquidacion = async (data) => {
     // El monto total que se le debe tras descuentos es: (Subtotal - Retenciones) - Anticipo
     // 8. CUENTAS POR PAGAR (Ajuste de Saldo Real)
     // El monto total que se le debe tras descuentos es: (Subtotal - Retenciones) - Anticipo
-    const totalNetoTrasCruce = parseFloat(liquidacion.totalAPagar) - montoAnticipoAplicado
+    const totalNetoTrasCruce =
+      parseFloat(liquidacion.totalLiquidacion) - montoAnticipoAplicado - liquidacion.totalRetencion
     const montoAbonadoHoy = parseFloat(liquidacion.montoAbonado || 0)
     const saldoFinalDeuda = totalNetoTrasCruce - montoAbonadoHoy
 
