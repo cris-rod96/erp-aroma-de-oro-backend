@@ -13,9 +13,8 @@ import {
 
 export const NODEMAILER_CONFIG = {
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  // priority: 'high',
+  port: 465, // Cambiado de 587 a 465
+  secure: true, // Cambiado de false a true
   family: 4,
   auth: {
     user: EMAIL_SECURE_DIR,

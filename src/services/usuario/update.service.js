@@ -114,7 +114,7 @@ const recuperarClave = async (correo) => {
       clave: hashContraseña,
     })
 
-    nodemailerHelper.recuperarContraseña(
+    await nodemailerHelper.recuperarContraseña(
       correo,
       usuario.nombresCompletos,
       PASSWORD_DEFAULT,
