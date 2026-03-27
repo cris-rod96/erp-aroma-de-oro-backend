@@ -55,4 +55,6 @@ usuarioRouter.patch(
   usuarioControllers.recuperarUsuario
 )
 
+usuarioRouter.patch('/recuperar-clave', usuarioControllers.recuperarClave)
+
 export default usuarioRouter

@@ -1,7 +1,12 @@
 import { borrarUsuario } from './delete.controller.js'
 import { listarUsuarios, listarUsuarioPorClave } from './get.controller.js'
 import { agregarUsuario } from './post.controller.js'
-import { actualizarClave, actualizarInformacion, recuperarUsuario } from './update.controller.js'
+import {
+  actualizarClave,
+  actualizarInformacion,
+  recuperarClave,
+  recuperarUsuario,
+} from './update.controller.js'
 
 export default {
   agregarUsuario,
@@ -11,4 +16,5 @@ export default {
   listarUsuarios,
   listarUsuarioPorClave,
   recuperarUsuario,
+  recuperarClave,
 }

@@ -1,4 +1,6 @@
-import { Usuario } from '../../libs/db.js'
+import { PASSWORD_DEFAULT } from '../../config/envs.js'
+import { nodemailerHelper } from '../../helpers/index.helpers.js'
+import { Empresa, Usuario } from '../../libs/db.js'
 import { bcryptUtils } from '../../utils/index.utils.js'
 
 const actualizarInformacion = async (id, data) => {
@@ -89,4 +91,31 @@ const recupearUsuario = async (id) => {
   await usuario.update({ estaActivo: true })
   return { code: 200, message: 'Usuario recuperado con éxito.' }
 }
-export { actualizarInformacion, actualizarClave, recupearUsuario }
+
+const recuperarClave = async (correo) => {
+  const usuario = await Usuario.findOne({
+    where: {
+      correo,
+    },
+  })
+
+  if (!usuario) return { code: 404, message: 'Usuario no encontrado' }
+  if (!usuario.estaActivo) return { code: 400, message: 'Usuario no disponible' }
+
+  const empresa = await Empresa.findOne()
+  const hashContraseña = await bcryptUtils.hashPassword(PASSWORD_DEFAULT)
+
+  await usuario.update({
+    clave: hashContraseña,
+  })
+
+  nodemailerHelper.recuperarContraseña(
+    correo,
+    usuario.nombresCompletos,
+    PASSWORD_DEFAULT,
+    empresa.nombre
+  )
+
+  return { code: 200, message: 'Nueva contraseña enviada al correo registrado' }
+}
+export { actualizarInformacion, actualizarClave, recupearUsuario, recuperarClave }

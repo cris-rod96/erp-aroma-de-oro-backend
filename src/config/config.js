@@ -7,7 +7,19 @@ import {
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
   CLOUDINARY_API_CLOUD_NAME,
+  EMAIL_SECURE_DIR,
+  EMAIL_SECURE_PASSWORD,
 } from './envs.js'
+
+export const NODEMAILER_CONFIG = {
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: EMAIL_SECURE_DIR,
+    pass: EMAIL_SECURE_PASSWORD,
+  },
+}
 
 const _defaultConfig = {
   logging: false,

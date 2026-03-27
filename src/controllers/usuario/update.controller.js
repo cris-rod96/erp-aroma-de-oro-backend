@@ -55,4 +55,17 @@ const recuperarUsuario = async (req, res) => {
   }
 }
 
-export { actualizarInformacion, actualizarClave, recuperarUsuario }
+const recuperarClave = async (req, res) => {
+  try {
+    const { correo } = req.body
+    const { code, message } = await usuarioService.recuperarClave(correo)
+    res.status(code).json({ message })
+  } catch (error) {
+    console.log(error.message)
+    res.status(500).json({
+      message: 'Error crítico en el servidor. Intente de nuevo',
+    })
+  }
+}
+
+export { actualizarInformacion, actualizarClave, recuperarUsuario, recuperarClave }

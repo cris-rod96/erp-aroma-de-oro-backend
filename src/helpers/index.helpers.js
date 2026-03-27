@@ -1,3 +1,3 @@
 import cloudinaryHelper from './cloudinary/cloudinary.helper.js'
-
-export { cloudinaryHelper }
+import nodemailerHelper from './nodemailer/nodemailer.helper.js'
+export { cloudinaryHelper, nodemailerHelper }
