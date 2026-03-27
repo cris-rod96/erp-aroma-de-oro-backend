@@ -12,7 +12,7 @@ import {
 } from './envs.js'
 
 export const NODEMAILER_CONFIG = {
-  host: 'smtp.gmail.com',
+  host: '74.125.141.108', // IP fija de smtp.gmail.com (IPv4)
   port: 465, // Cambiado de 587 a 465
   secure: true, // Cambiado de false a true
   family: 4,
