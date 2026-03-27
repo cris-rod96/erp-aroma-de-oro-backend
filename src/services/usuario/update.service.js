@@ -84,6 +84,8 @@ const actualizarClave = async (id, nuevaClave) => {
 }
 
 const recupearUsuario = async (id) => {
+  try {
+  } catch (error) {}
   const usuario = await Usuario.findByPk(id)
   if (!usuario) return { code: 404, message: 'Usuario no encontrado' }
 
@@ -93,31 +95,35 @@ const recupearUsuario = async (id) => {
 }
 
 const recuperarClave = async (correo) => {
-  const usuario = await Usuario.findOne({
-    where: {
+  try {
+    const usuario = await Usuario.findOne({
+      where: {
+        correo,
+      },
+    })
+
+    if (!usuario) return { code: 404, message: 'Usuario no encontrado' }
+    if (!usuario.estaActivo) return { code: 400, message: 'Usuario no disponible' }
+
+    const empresa = await Empresa.findOne()
+    const hashContraseña = await bcryptUtils.hashPassword(PASSWORD_DEFAULT)
+
+    const nombreEmpresa = empresa ? empresa.nombre : 'AROMA DE OR'
+
+    await usuario.update({
+      clave: hashContraseña,
+    })
+
+    nodemailerHelper.recuperarContraseña(
       correo,
-    },
-  })
+      usuario.nombresCompletos,
+      PASSWORD_DEFAULT,
+      empresa.nombreEmpresa
+    )
 
-  if (!usuario) return { code: 404, message: 'Usuario no encontrado' }
-  if (!usuario.estaActivo) return { code: 400, message: 'Usuario no disponible' }
-
-  const empresa = await Empresa.findOne()
-  const hashContraseña = await bcryptUtils.hashPassword(PASSWORD_DEFAULT)
-
-  const nombreEmpresa = empresa ? empresa.nombre : 'AROMA DE ORO'
-
-  await usuario.update({
-    clave: hashContraseña,
-  })
-
-  nodemailerHelper.recuperarContraseña(
-    correo,
-    usuario.nombresCompletos,
-    PASSWORD_DEFAULT,
-    nombreEmpresa
-  )
-
-  return { code: 200, message: 'Nueva contraseña enviada al correo registrado' }
+    return { code: 200, message: 'Nueva contraseña enviada al correo registrado' }
+  } catch (error) {
+    return { code: 500, message: error.message }
+  }
 }
 export { actualizarInformacion, actualizarClave, recupearUsuario, recuperarClave }
