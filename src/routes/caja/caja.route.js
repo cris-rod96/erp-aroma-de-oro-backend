@@ -49,4 +49,11 @@ cajaRouter.post(
   cajaControllers.postInyeccionBanco
 )
 
+cajaRouter.post(
+  '/inyectar-venta',
+  jwtMiddlewares.verificarToken,
+  jwtMiddlewares.rolesAdmitidos('Administrador', 'Contador'),
+  cajaControllers.registrarVentaRapida
+)
+
 export default cajaRouter

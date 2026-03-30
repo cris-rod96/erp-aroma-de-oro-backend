@@ -57,4 +57,15 @@ const postInyeccionBanco = async (req, res) => {
   }
 }
 
-export { cerrarCaja, postInyeccionBanco }
+const registrarVentaRapida = async (req, res) => {
+  try {
+    const data = req.body
+    const { code, message, caja } = await cajaService.registrarVentaRapida(data)
+    res.status(code).json(caja ? { caja, message } : { message })
+  } catch (error) {
+    const msg = error.message
+    res.status(500).json({ message: msg })
+  }
+}
+
+export { cerrarCaja, postInyeccionBanco, registrarVentaRapida }

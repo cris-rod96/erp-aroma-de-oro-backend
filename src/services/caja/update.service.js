@@ -1,4 +1,4 @@
-import { Caja, Movimiento, sq } from '../../libs/db.js'
+import { Caja, Movimiento, Producto, sq } from '../../libs/db.js'
 
 const cerrarCaja = async (id, data) => {
   const caja = await Caja.findByPk(id)
@@ -14,13 +14,12 @@ const cerrarCaja = async (id, data) => {
     let ingresosFisicos = 0
     let egresosFisicos = 0
     let sumaInyeccionesBancos = 0
-    let movimientosVirtuales = 0 // Bancos/Cheques (No afectan el efectivo)
+    let movimientosVirtuales = 0
 
     movimientos.forEach((m) => {
       const valor = parseFloat(m.monto)
       const desc = m.descripcion?.toUpperCase() || ''
 
-      // DETERMINAMOS SI ES UN MOVIMIENTO QUE AFECTA EL DINERO FÍSICO
       const esVirtual =
         desc.includes('BANCO') || desc.includes('CHEQUE') || desc.includes('TRANSFERENCIA')
 
@@ -37,23 +36,26 @@ const cerrarCaja = async (id, data) => {
         if (!esVirtual) {
           egresosFisicos += valor
         } else {
-          // Si es un egreso por BANCO (como tus $2,000), no resta del físico
           movimientosVirtuales -= valor
         }
       }
     })
 
-    // CÁLCULO REAL PARA EL ARQUEO DE AROMA DE ORO
-    // Saldo Sistema = Apertura + Lo que entró en billetes - Lo que salió en billetes
-    const saldoSistemaFisico = parseFloat(caja.montoApertura) + ingresosFisicos - egresosFisicos
+    // --- EL FIX ESTÁ AQUÍ ---
+
+    // Calculamos el saldo y lo redondeamos a 2 decimales inmediatamente
+    const saldoBruto = parseFloat(caja.montoApertura) + ingresosFisicos - egresosFisicos
+    const saldoSistemaFisico = Number(saldoBruto.toFixed(2)) // <--- LIMPIEZA DECIMAL
 
     const montoContado = parseFloat(data.montoCierre)
-    const diferenciaArqueo = montoContado - saldoSistemaFisico
+
+    // Calculamos la diferencia y la limpiamos también
+    const diferenciaArqueo = Number((montoContado - saldoSistemaFisico).toFixed(2)) // <--- ADIÓS AL -0.00
 
     // ACTUALIZACIÓN DEL MODELO EN DB
     await caja.update({
       fechaCierre: new Date(),
-      montoEsperado: saldoSistemaFisico, // Ahora guardará $4,700
+      montoEsperado: saldoSistemaFisico,
       totalInyecciones: sumaInyeccionesBancos,
       montoCierre: montoContado,
       diferencia: diferenciaArqueo,
@@ -67,12 +69,12 @@ const cerrarCaja = async (id, data) => {
       message: 'Caja cerrada y arqueada con éxito',
       resumen: {
         apertura: parseFloat(caja.montoApertura),
-        totalIngresosEfectivo: ingresosFisicos,
-        totalEgresosEfectivo: egresosFisicos,
-        operacionesBancarias: movimientosVirtuales,
+        totalIngresosEfectivo: Number(ingresosFisicos.toFixed(2)),
+        totalEgresosEfectivo: Number(egresosFisicos.toFixed(2)),
+        operacionesBancarias: Number(movimientosVirtuales.toFixed(2)),
         esperado: saldoSistemaFisico,
         contado: montoContado,
-        diferencia: diferenciaArqueo,
+        diferencia: diferenciaArqueo, // Ahora enviará 0 exacto
       },
     }
   } catch (error) {
@@ -136,5 +138,52 @@ const registrarInyeccionBanco = async (data) => {
     return { code: 500, message: 'Error interno al registrar el ingreso de banco' }
   }
 }
+const registrarVentaRapida = async (data) => {
+  const t = await sq.transaction()
+  try {
+    const { monto, descripcion, CajaId, ProductoId, cantidad } = data
+    const caja = await Caja.findByPk(CajaId)
+    if (!caja) return { code: 400, message: 'No se encontró la caja' }
+    if (caja.estado === 'Cerrada')
+      return { code: 400, message: 'La caja ya se encuentra cerrada y con cuadre.' }
+    if (monto > caja.saldoActual) return { code: 400, message: 'Fondos insuficientes' }
 
-export { cerrarCaja, registrarInyeccionBanco }
+    const nuevoMovimiento = await Movimiento.create(
+      {
+        tipoMovimiento: 'Ingreso',
+        categoria: 'Venta',
+        monto,
+        descripcion: `VENTA RÁPIDA: ${descripcion}`,
+        CajaId,
+        fecha: new Date(),
+      },
+      { transaction: t }
+    )
+
+    const producto = await Producto.findByPk(ProductoId)
+    if (!producto) return { code: 400, message: 'Producto no encontrado' }
+
+    if (parseFloat(producto.stock) < parseFloat(cantidad))
+      return {
+        code: 400,
+        message: `Stock insuficiente. Disponible ${producto.stock} ${producto.unidadMedida}`,
+      }
+
+    producto.stock = parseFloat(producto.stock) - parseFloat(cantidad)
+    await producto.save({ transaction: t })
+
+    caja.saldoActual = parseFloat(caja.saldoActual) + parseFloat(monto)
+    await caja.save({ transaction: t })
+
+    await t.commit()
+    return { code: 201, message: 'Venta y egreso de bodega registrados con éxito', caja }
+  } catch (error) {
+    await t.rollback()
+    return {
+      code: 500,
+      message: 'Error interno el procesar venta rápida',
+    }
+  }
+}
+
+export { cerrarCaja, registrarInyeccionBanco, registrarVentaRapida }
