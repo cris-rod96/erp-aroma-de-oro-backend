@@ -1,4 +1,5 @@
 import { Persona } from '../../libs/db.js'
+import { validatorsUtils } from '../../utils/index.utils.js'
 
 const actualizarPersona = async (id, data) => {
   const persona = await Persona.findOne({
@@ -14,6 +15,9 @@ const actualizarPersona = async (id, data) => {
   const { telefono, correo } = data
 
   if (telefono) {
+    if (!validatorsUtils.validarTelefono(telefono)) {
+      return { code: 400, message: 'El número de teléfono no es válido' }
+    }
     const existeOtraPersona = await Persona.findOne({
       where: {
         telefono,
