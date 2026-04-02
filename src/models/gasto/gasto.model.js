@@ -39,6 +39,8 @@ const GastoModel = (sq) => {
           'Combustible',
           'Mantenimiento',
           'Suministros',
+          'Cumpleaños',
+          'Bonificaciones',
           'Varios'
         ),
         defaultValue: 'Varios',
