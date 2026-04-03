@@ -9,7 +9,7 @@ import {
 
 const listarTodas = async () => {
   const cuentasPorPagar = await CuentasPorPagar.findAll({
-    order: [['createdAt', 'DESC']],
+    order: [['fechaAbono', 'DESC']],
 
     include: [
       {

@@ -2,7 +2,7 @@ import { Producto } from '../../libs/db.js'
 
 const listarProductos = async () => {
   const productos = await Producto.findAll({
-    order: [['createdAt', 'DESC']],
+    order: [['fechaCreacion', 'DESC']],
   })
 
   return {
