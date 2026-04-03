@@ -12,6 +12,7 @@ import {
 
 const listarTodas = async () => {
   const cuentasPorCobrar = await CuentasPorCobrar.findAll({
+    order: [['createdAt', 'DESC']],
     include: [
       {
         model: Venta,

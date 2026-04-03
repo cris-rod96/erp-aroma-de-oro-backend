@@ -1,15 +1,14 @@
-import { Producto } from "../../libs/db.js";
+import { Producto } from '../../libs/db.js'
 
+const listarProductos = async () => {
+  const productos = await Producto.findAll({
+    order: [['createdAt', 'DESC']],
+  })
 
-const listarProductos = async() => {
-    const productos = await Producto.findAll({})
-
-    return {
-        code: 200,
-        productos
-    }
+  return {
+    code: 200,
+    productos,
+  }
 }
 
-export {
-    listarProductos
-}
+export { listarProductos }

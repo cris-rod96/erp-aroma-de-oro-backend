@@ -11,6 +11,8 @@ const listarPagos = async () => {
         },
       },
     ],
+
+    order: [['createdAt', 'DESC']],
   })
 
   return {
@@ -24,6 +26,7 @@ const listarPagosPorEmpleado = async (PersonaId) => {
     where: {
       id: PersonaId,
     },
+    order: [['createdAt', 'DESC']],
   })
 
   if (!persona) return { code: 404, message: 'Empleado no encontrado' }

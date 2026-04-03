@@ -2,7 +2,9 @@ import { col, fn, literal, Op, where } from 'sequelize'
 import { CuentasPorPagar, DetalleLiquidacion, Liquidacion, Persona, Venta } from '../../libs/db.js'
 
 const listarPersonas = async () => {
-  const personas = await Persona.findAll()
+  const personas = await Persona.findAll({
+    order: [['createdAt', 'DESC']],
+  })
   return {
     code: 200,
     personas,
@@ -14,6 +16,7 @@ const listarProductores = async () => {
     where: {
       tipo: 'Productor',
     },
+    order: [['createdAt', 'DESC']],
     include: [
       {
         model: Liquidacion,
@@ -33,6 +36,7 @@ const listarCompradores = async () => {
     where: {
       tipo: 'Comprador',
     },
+    order: [['createdAt', 'DESC']],
   })
 
   console.log(compradores)
@@ -48,6 +52,8 @@ const listarTrabajadores = async () => {
     where: {
       tipo: 'Trabajador',
     },
+
+    order: [['createdAt', 'DESC']],
   })
 
   return {

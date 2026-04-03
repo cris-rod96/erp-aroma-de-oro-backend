@@ -69,6 +69,7 @@ const listarTodos = async () => {
       { model: Anticipo, as: 'detalleAnticipo', required: false, include: [Persona] },
       { model: Caja },
     ],
+    order: [['createdAt', 'DESC']],
   })
 
   return {
