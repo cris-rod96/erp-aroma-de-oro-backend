@@ -1,4 +1,5 @@
 import { Caja, Movimiento, Producto, sq } from '../../libs/db.js'
+import { backupUtils } from '../../utils/index.utils.js'
 
 const cerrarCaja = async (id, data) => {
   const caja = await Caja.findByPk(id)
@@ -41,18 +42,13 @@ const cerrarCaja = async (id, data) => {
       }
     })
 
-    // --- EL FIX ESTÁ AQUÍ ---
-
-    // Calculamos el saldo y lo redondeamos a 2 decimales inmediatamente
+    // --- CÁLCULOS DE SALDO ---
     const saldoBruto = parseFloat(caja.montoApertura) + ingresosFisicos - egresosFisicos
-    const saldoSistemaFisico = Number(saldoBruto.toFixed(2)) // <--- LIMPIEZA DECIMAL
-
+    const saldoSistemaFisico = Number(saldoBruto.toFixed(2))
     const montoContado = parseFloat(data.montoCierre)
+    const diferenciaArqueo = Number((montoContado - saldoSistemaFisico).toFixed(2))
 
-    // Calculamos la diferencia y la limpiamos también
-    const diferenciaArqueo = Number((montoContado - saldoSistemaFisico).toFixed(2)) // <--- ADIÓS AL -0.00
-
-    // ACTUALIZACIÓN DEL MODELO EN DB
+    // 1. ACTUALIZACIÓN DEL MODELO EN DB (Primero aseguramos el cierre)
     await caja.update({
       fechaCierre: new Date(),
       montoEsperado: saldoSistemaFisico,
@@ -64,6 +60,17 @@ const cerrarCaja = async (id, data) => {
         data.observaciones || `Cierre Aroma de Oro. Diferencia: $${diferenciaArqueo.toFixed(2)}`,
     })
 
+    // 2. EJECUCIÓN DEL BACKUP (Omitimos Cloudinary/DB por ahora, solo local)
+    // Lo envolvemos en un try independiente para que un error de pg_dump no tumbe el cierre de caja
+    let backupPath = null
+    try {
+      console.log('--- Iniciando proceso de backup de seguridad ---')
+      backupPath = await backupUtils.generarBackup(id)
+    } catch (backupError) {
+      console.error('⚠️ El cierre de caja fue exitoso, pero el BACKUP FALLÓ:', backupError.message)
+      // Aquí podrías enviar un log a un servicio externo si quisieras
+    }
+
     return {
       code: 200,
       message: 'Caja cerrada y arqueada con éxito',
@@ -74,14 +81,16 @@ const cerrarCaja = async (id, data) => {
         operacionesBancarias: Number(movimientosVirtuales.toFixed(2)),
         esperado: saldoSistemaFisico,
         contado: montoContado,
-        diferencia: diferenciaArqueo, // Ahora enviará 0 exacto
+        diferencia: diferenciaArqueo,
+        backupLocal: backupPath ? 'Generado exitosamente' : 'Fallido',
       },
     }
   } catch (error) {
-    console.error('Error en servicio cerrarCaja:', error)
+    console.error('Error crítico en servicio cerrarCaja:', error)
     return { code: 500, message: 'Error interno al procesar el cierre' }
   }
 }
+
 const registrarInyeccionBanco = async (data) => {
   const { monto, descripcion, CajaId } = data
 

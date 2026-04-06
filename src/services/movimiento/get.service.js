@@ -22,6 +22,7 @@ const listarPorCaja = async (CajaId) => {
     where: {
       CajaId,
     },
+    order: [['createdAt', 'DESC']],
   })
   return { code: 200, movimientos }
 }
@@ -31,6 +32,7 @@ const listarPorClave = async (clave, valor) => {
     where: {
       [clave]: valor,
     },
+    order: [['createdAt', 'DESC']],
   })
 
   return { code: 200, movimientos }
@@ -43,6 +45,7 @@ const listarPorRango = async (fechaInicio, fechaFin) => {
         [Op.between]: [fechaInicio, fechaFin],
       },
     },
+    order: [['createdAt', 'DESC']],
   })
 
   return { code: 200, movimientos }

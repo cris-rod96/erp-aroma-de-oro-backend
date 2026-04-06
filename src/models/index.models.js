@@ -19,6 +19,7 @@ import AnticipoModel from './anticipo/anticipo.model.js'
 import LiquidacionAnticipoModel from './liquidacionAnticipo/LiquidacionAnticipo.model.js'
 import PrestamoModel from './prestamo/prestamo.model.js'
 import GastoModel from './gasto/gasto.model.js'
+import RespaldoModel from './respaldo/respaldo.model.js'
 export const models = [
   EmpresaModel,
   PersonaModel,
@@ -41,4 +42,5 @@ export const models = [
   LiquidacionAnticipoModel,
   PrestamoModel,
   GastoModel,
+  RespaldoModel,
 ]
