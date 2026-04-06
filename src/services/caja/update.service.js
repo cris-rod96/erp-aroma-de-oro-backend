@@ -1,5 +1,4 @@
 import { Caja, Movimiento, Producto, sq } from '../../libs/db.js'
-import { backupUtils } from '../../utils/index.utils.js'
 
 const cerrarCaja = async (id, data) => {
   const caja = await Caja.findByPk(id)
@@ -62,14 +61,14 @@ const cerrarCaja = async (id, data) => {
 
     // 2. EJECUCIÓN DEL BACKUP (Omitimos Cloudinary/DB por ahora, solo local)
     // Lo envolvemos en un try independiente para que un error de pg_dump no tumbe el cierre de caja
-    let backupPath = null
-    try {
-      console.log('--- Iniciando proceso de backup de seguridad ---')
-      backupPath = await backupUtils.generarBackup(id)
-    } catch (backupError) {
-      console.error('⚠️ El cierre de caja fue exitoso, pero el BACKUP FALLÓ:', backupError.message)
-      // Aquí podrías enviar un log a un servicio externo si quisieras
-    }
+    // let backupPath = null
+    // try {
+    //   console.log('--- Iniciando proceso de backup de seguridad ---')
+    //   backupPath = await backupUtils.generarBackup(id)
+    // } catch (backupError) {
+    //   console.error('⚠️ El cierre de caja fue exitoso, pero el BACKUP FALLÓ:', backupError.message)
+    //   // Aquí podrías enviar un log a un servicio externo si quisieras
+    // }
 
     return {
       code: 200,
@@ -82,7 +81,7 @@ const cerrarCaja = async (id, data) => {
         esperado: saldoSistemaFisico,
         contado: montoContado,
         diferencia: diferenciaArqueo,
-        backupLocal: backupPath ? 'Generado exitosamente' : 'Fallido',
+        // backupLocal: backupPath ? 'Generado exitosamente' : 'Fallido',
       },
     }
   } catch (error) {
