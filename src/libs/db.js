@@ -29,6 +29,7 @@ const {
   LiquidacionAnticipo,
   Prestamo, // Nuevo modelo
   Gasto,
+  Respaldo,
 } = sq.models
 
 // --- RELACIONES DE CAJA Y MOVIMIENTOS ---
@@ -210,6 +211,9 @@ Gasto.belongsTo(Usuario, { foreignKey: 'UsuarioId' })
 Caja.hasMany(Venta, { foreignKey: 'CajaId' })
 Venta.belongsTo(Caja, { foreignKey: 'CajaId' })
 
+Caja.hasMany(Respaldo, { foreignKey: 'CajaId' })
+Respaldo.belongsTo(Caja, { foreignKey: 'CajaId' })
+
 export {
   sq,
   Empresa,
@@ -233,4 +237,5 @@ export {
   LiquidacionAnticipo,
   Prestamo,
   Gasto,
+  Respaldo,
 }

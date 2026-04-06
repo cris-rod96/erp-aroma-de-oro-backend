@@ -17,4 +17,5 @@ export const {
   EMAIL_SECURE_PASSWORD,
   EMAIL_SECURE_DIR,
   RESEND_API_KEY,
+  BACKUP_PASSWORD,
 } = process.env

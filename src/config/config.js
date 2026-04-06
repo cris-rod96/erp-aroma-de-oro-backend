@@ -11,7 +11,6 @@ import {
   EMAIL_SECURE_PASSWORD,
   RESEND_API_KEY,
 } from './envs.js'
-import { Resend } from 'resend'
 
 export const NODEMAILER_CONFIG = {
   // IP de Google para evitar problemas de DNS en Render
@@ -60,5 +59,8 @@ export const storage = new CloudinaryStorage({
     public_id: (req, file) => `doc-${Date.now()}`,
   },
 })
+
+export const DB_COMMAND =
+  NODE_ENV === 'development' ? '/usr/lib/postgresql/18/bin/pg_dump' : 'pg_dump'
 
 export { cloudinary }
