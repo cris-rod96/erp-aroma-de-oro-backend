@@ -20,39 +20,36 @@ const registrarCobro = async (data) => {
       UsuarioId,
       CajaId,
       descripcion,
-      origen, // 'Venta', 'Anticipo' o 'Préstamo'
+      origen,
+      afectaCaja, // Viene del switch del frontend
     } = data
 
     const montoAbono = parseFloat(monto)
 
-    // 1. VALIDAR CAJA
-    const cajaActiva = await Caja.findByPk(CajaId)
-    if (!cajaActiva || cajaActiva.estado !== 'Abierta') {
-      return { code: 400, message: 'La caja no existe o está cerrada.' }
+    // 1. VALIDAR CAJA (Solo si se marcó que afecta caja)
+    let cajaActiva = null
+    if (afectaCaja && CajaId) {
+      cajaActiva = await Caja.findByPk(CajaId)
+      if (!cajaActiva || cajaActiva.estado !== 'Abierta') {
+        return { code: 400, message: 'La caja seleccionada no está disponible o está cerrada.' }
+      }
     }
 
-    // 2. BUSCAR CUENTA POR COBRAR Y SU REFERENCIA
+    // 2. BUSCAR CUENTA POR COBRAR
     const cuenta = await CuentasPorCobrar.findByPk(CuentaPorCobrarId)
     if (!cuenta) throw new Error('Cuenta por cobrar no encontrada.')
 
-    const idRef = cuenta.referenciaId // El ID del modelo original (Venta/Prestamo/Anticipo)
+    const idRef = cuenta.referenciaId
 
-    // 3. ACTUALIZAR EL MODELO DE ORIGEN (La lógica que faltaba)
+    // 3. ACTUALIZAR EL MODELO DE ORIGEN (Venta/Prestamo/Anticipo)
+    // Esta parte siempre se ejecuta para que la deuda baje
     switch (origen) {
       case 'Préstamo':
         const prestamo = await Prestamo.findByPk(idRef)
         if (prestamo) {
-          const saldoAnterior = parseFloat(prestamo.saldoPendiente)
-          const nuevoSaldoP = saldoAnterior - montoAbono
-
-          // VALIDACIÓN DE CUOTAS
+          const nuevoSaldoP = parseFloat(prestamo.saldoPendiente) - montoAbono
           let cuotasActualizadas = prestamo.cuotasPagadas + 1
-
-          // Si el saldo llega a cero (o es menor por algún ajuste),
-          // forzamos a que las cuotas pagadas sean iguales a las pactadas
-          if (nuevoSaldoP <= 0) {
-            cuotasActualizadas = prestamo.cuotasPactadas
-          }
+          if (nuevoSaldoP <= 0) cuotasActualizadas = prestamo.cuotasPactadas
 
           await prestamo.update(
             {
@@ -94,7 +91,7 @@ const registrarCobro = async (data) => {
         break
     }
 
-    // 4. REGISTRAR ABONO (Auditoría de cobros)
+    // 4. REGISTRAR ABONO (Auditoría siempre se guarda)
     const nuevoAbono = await AbonosCuentasPorCobrar.create(
       {
         monto: montoAbono,
@@ -106,53 +103,57 @@ const registrarCobro = async (data) => {
       { transaction: t }
     )
 
-    // 5. ACTUALIZAR CUENTA POR COBRAR (Saldos globales)
+    // 5. ACTUALIZAR CUENTA POR COBRAR (Saldos globales de la cartera)
     const saldoRestante = parseFloat(cuenta.montoPorCobrar) - montoAbono
     const camposUpdate = {
-      montoPorCobrar: saldoRestante,
+      montoPorCobrar: saldoRestante <= 0 ? 0 : saldoRestante,
       estado: saldoRestante <= 0 ? 'Cobrado' : 'Pendiente',
     }
 
+    // Clasificación del dinero para reportes de cartera
     if (metodoCobro === 'Efectivo')
       camposUpdate.montoEfectivo = parseFloat(cuenta.montoEfectivo) + montoAbono
     if (metodoCobro === 'Transferencia')
       camposUpdate.montoTransferencia = parseFloat(cuenta.montoTransferencia) + montoAbono
-    if (metodoCobro === 'Depósito')
-      camposUpdate.montoCheque = parseFloat(cuenta.montoCheque) + montoAbono
 
     await cuenta.update(camposUpdate, { transaction: t })
 
-    // 6. REGISTRAR MOVIMIENTO DE CAJA
-    await Movimiento.create(
-      {
-        tipoMovimiento: 'Ingreso',
-        categoria: 'Cuentas por Cobrar',
-        monto: montoAbono,
-        idReferencia: nuevoAbono.id,
-        descripcion: descripcion || `Cobro ${origen} - Ref: ${idRef}`,
-        CajaId: cajaActiva.id,
-        fecha: new Date(),
-      },
-      { transaction: t }
-    )
+    // 6. LÓGICA DE CAJA (SOLO SI afectaCaja ES TRUE)
+    if (afectaCaja && cajaActiva) {
+      // Registrar el movimiento en el libro de caja
+      await Movimiento.create(
+        {
+          tipoMovimiento: 'Ingreso',
+          categoria: 'Cuentas por Cobrar',
+          monto: montoAbono,
+          idReferencia: nuevoAbono.id,
+          descripcion: descripcion || `Cobro ${origen} - Ref: ${idRef} (Ingreso a Caja)`,
+          CajaId: cajaActiva.id,
+          fecha: new Date(),
+        },
+        { transaction: t }
+      )
 
-    // 7. ACTUALIZAR SALDO ACTUAL DE CAJA
-    await cajaActiva.update(
-      {
-        saldoActual: parseFloat(cajaActiva.saldoActual) + montoAbono,
-      },
-      { transaction: t }
-    )
+      // Actualizar el saldo físico de la caja
+      await cajaActiva.update(
+        {
+          saldoActual: parseFloat(cajaActiva.saldoActual) + montoAbono,
+        },
+        { transaction: t }
+      )
+    }
 
     await t.commit()
 
     return {
       code: 200,
-      message: `Cobro de ${origen} procesado correctamente.`,
-      cajaActualizada: cajaActiva,
+      message: afectaCaja
+        ? `Cobro procesado e ingresado a caja correctamente.`
+        : `Cobro procesado (No ingresó a caja física).`,
+      cajaActualizada: cajaActiva, // Si es null, el frontend no actualiza el store de caja
     }
   } catch (error) {
-    await t.rollback()
+    if (t) await t.rollback()
     console.error('Error Crítico Aroma de Oro:', error)
     return { code: 500, message: error.message }
   }
