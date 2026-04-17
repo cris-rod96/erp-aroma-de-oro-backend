@@ -1,6 +1,7 @@
 import { Caja, Movimiento, Producto, sq } from '../../libs/db.js'
 
 const cerrarCaja = async (id, data) => {
+  console.log(data)
   const caja = await Caja.findByPk(id)
 
   if (!caja) return { code: 404, message: 'Caja no encontrada' }
@@ -21,7 +22,10 @@ const cerrarCaja = async (id, data) => {
       const desc = m.descripcion?.toUpperCase() || ''
 
       const esVirtual =
-        desc.includes('BANCO') || desc.includes('CHEQUE') || desc.includes('TRANSFERENCIA')
+        desc.includes('BANCO') ||
+        desc.includes('CHEQUE') ||
+        desc.includes('TRANSFERENCIA') ||
+        desc.includes('BANCARIO')
 
       if (m.tipoMovimiento === 'Ingreso') {
         if (!esVirtual) {
@@ -44,6 +48,7 @@ const cerrarCaja = async (id, data) => {
     // --- CÁLCULOS DE SALDO ---
     const saldoBruto = parseFloat(caja.montoApertura) + ingresosFisicos - egresosFisicos
     const saldoSistemaFisico = Number(saldoBruto.toFixed(2))
+
     const montoContado = parseFloat(data.montoCierre)
     const diferenciaArqueo = Number((montoContado - saldoSistemaFisico).toFixed(2))
 
