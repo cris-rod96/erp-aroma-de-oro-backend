@@ -63,11 +63,11 @@ cajaRouter.patch(
   cajaControllers.reAperturarCaja
 )
 
-cajaRouter.patch(
-  '/actualizar-data/:id',
-  jwtMiddlewares.verificarToken,
-  jwtMiddlewares.rolesAdmitidos('Administrador'),
-  cajaControllers.updateDataCaja
-)
+// cajaRouter.patch(
+//   '/actualizar-data/:id',
+//   jwtMiddlewares.verificarToken,
+//   jwtMiddlewares.rolesAdmitidos('Administrador'),
+//   cajaControllers.updateDataCaja
+// )
 
 export default cajaRouter
