@@ -5,7 +5,7 @@ const listarPorCxc = async (id) => {
     where: {
       id,
     },
-    order: [['createdAt', 'DESC']],
+    order: [['fecha', 'DESC']],
   })
 
   if (!cxc) return { code: 404, message: 'No existe la cuenta por cobrar' }
