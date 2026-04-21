@@ -11,6 +11,13 @@ prestamoRouter.post(
   prestamoControllers.crearPrestamo
 )
 
+prestamoRouter.post(
+  '/prestamo-terceros',
+  jwtMiddlewares.verificarToken,
+  jwtMiddlewares.rolesAdmitidos('Administrador', 'Contador'),
+  prestamoControllers.prestamoTerceros
+)
+
 prestamoRouter.get(
   '/listar-todos',
   jwtMiddlewares.verificarToken,

@@ -250,7 +250,7 @@ const registrarLiquidacion = async (data) => {
           categoria: 'Compra',
           monto: pTrans,
           idReferencia: nuevaLiquidacion.id,
-          CajaId: null, // No afecta a la caja física
+          CajaId: CajaId, // No afecta a la caja física
           descripcion: `TRANSFERENCIA: Liq ${codigoLiq}`, // <--- Ahora es específico
         },
         { transaction: t }
@@ -266,7 +266,7 @@ const registrarLiquidacion = async (data) => {
           categoria: 'Compra',
           monto: pCheque,
           idReferencia: nuevaLiquidacion.id,
-          CajaId: null, // No afecta a la caja física
+          CajaId: CajaId, // No afecta a la caja física
           descripcion: `CHEQUE: Liq ${codigoLiq}`, // <--- Ahora es específico
         },
         { transaction: t }

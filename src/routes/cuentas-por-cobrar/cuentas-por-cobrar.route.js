@@ -37,4 +37,11 @@ cuentasPorCobrarRouter.patch(
   cuentasPorCobrarControllers.registrarCobro
 )
 
+cuentasPorCobrarRouter.post(
+  '/prestamo-tercero',
+  jwtMiddlewares.verificarToken,
+  jwtMiddlewares.rolesAdmitidos('Administrador', 'Contador'),
+  cuentasPorCobrarControllers.crearPrestamoTercero
+)
+
 export default cuentasPorCobrarRouter

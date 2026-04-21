@@ -34,6 +34,10 @@ const CuentasPorCobrar = (sq) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
+      comentario: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
       fecha: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

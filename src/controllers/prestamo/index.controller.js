@@ -1,5 +1,5 @@
 import { listarPrestamosPendientesPorPersona, listarTodosPrestamos } from './get.controller.js'
-import { crearPrestamo } from './post.controller.js'
+import { crearPrestamo, prestamoTerceros } from './post.controller.js'
 import { actualizarPrestamo } from './update.controller.js'
 
 export default {
@@ -7,4 +7,5 @@ export default {
   listarTodosPrestamos,
   listarPrestamosPendientesPorPersona,
   actualizarPrestamo,
+  prestamoTerceros,
 }

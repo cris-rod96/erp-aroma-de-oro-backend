@@ -1,4 +1,4 @@
-import { sq, Prestamo, Caja, Movimiento, CuentasPorCobrar } from '../../libs/db.js'
+import { Caja, CuentasPorCobrar, Movimiento, Prestamo, sq } from '../../libs/db.js'
 
 const crearPrestamo = async (data) => {
   const { PersonaId, CajaId, montoTotal, cuotasPactadas, UsuarioId, comentario } = data
@@ -97,4 +97,78 @@ const crearPrestamo = async (data) => {
   }
 }
 
-export { crearPrestamo }
+const prestamoTerceros = async (data) => {
+  const { CajaId, montoTotal, comentario, UsuarioId } = data
+  const t = await sq.transaction()
+
+  try {
+    const caja = await Caja.findByPk(CajaId, { transaction: t })
+    if (!caja || caja.estado !== 'Abierta') {
+      await t.rollback() // Siempre rollback antes de retornar error
+      return { code: 400, message: 'La caja seleccionada no está abierta' }
+    }
+
+    if (parseFloat(caja.saldoActual) < parseFloat(montoTotal)) {
+      await t.rollback()
+      return { code: 400, message: 'Saldo insuficiente en caja' }
+    }
+
+    const montoCuota = parseFloat(montoTotal) / 1
+    const nuevoPrestamo = await Prestamo.create(
+      {
+        montoTotal,
+        cuotasPactadas: 1,
+        cuotasPagadas: 0,
+        montoCuota: montoCuota.toFixed(2),
+        saldoPendiente: montoTotal,
+        estado: 'Pendiente',
+        PersonaId: null,
+        CajaId,
+        UsuarioId,
+        comentario: comentario || 'Préstamo a tercero',
+      },
+      { transaction: t }
+    )
+
+    await Movimiento.create(
+      {
+        tipoMovimiento: 'Egreso',
+        categoria: 'Préstamo',
+        monto: montoTotal,
+        idReferencia: nuevoPrestamo.id,
+        descripcion: `Desembolso Préstamo. Ref: ${nuevoPrestamo.id.substring(0, 8)}`,
+        CajaId: CajaId,
+      },
+      { transaction: t }
+    )
+
+    await CuentasPorCobrar.create(
+      {
+        montoTotal: montoTotal,
+        montoPorCobrar: montoTotal,
+        estado: 'Pendiente',
+        origen: 'Préstamo',
+        referenciaId: nuevoPrestamo.id,
+        fecha: new Date(),
+      },
+      { transaction: t }
+    )
+
+    await caja.decrement('saldoActual', { by: montoTotal, transaction: t })
+    await caja.reload({ transaction: t })
+
+    await t.commit()
+
+    return {
+      code: 201,
+      message: 'Préstamo y Cuenta por Cobrar creados con éxito',
+      caja,
+    }
+  } catch (error) {
+    if (t) await t.rollback()
+    console.error('Error en crearPrestamo:', error)
+    return { code: 500, message: 'Error interno del servidor' }
+  }
+}
+
+export { crearPrestamo, prestamoTerceros }
